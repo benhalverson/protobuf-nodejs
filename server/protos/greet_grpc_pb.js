@@ -1,8 +1,8 @@
 // GENERATED CODE -- DO NOT EDIT!
 
-'use strict';
-var grpc = require('grpc');
-var protos_greet_pb = require('../protos/greet_pb.js');
+
+const grpc = require('grpc');
+const protos_greet_pb = require('./greet_pb.js');
 
 function serialize_greet_GreetRequest(arg) {
   if (!(arg instanceof protos_greet_pb.GreetRequest)) {
@@ -27,9 +27,9 @@ function deserialize_greet_GreetResponse(buffer_arg) {
 }
 
 
-var GreetServiceService = exports.GreetServiceService = {
+const GreetServiceService = exports.GreetServiceService = {
   // unary API
-greet: {
+  greet: {
     path: '/greet.GreetService/Greet',
     requestStream: false,
     responseStream: false,
