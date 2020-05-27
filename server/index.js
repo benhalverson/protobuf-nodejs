@@ -83,6 +83,36 @@ function listBlog(call, callback) {
   });
 }
 
+function createBlog(call, callback) {
+  console.log('Recieved blog request');
+
+  const blog = call.request.getBlog();
+  console.log('Inserting a new blog');
+
+  knex('blogs')
+    .insert({
+      author: blog.getAuthor(),
+      title: blog.getTitle(),
+      content: blog.getContent(),
+    }).then(() => {
+      const id = blog.getId();
+      const addedBlog = new blogs.Blog();
+      const blogResponse = new blogs.CreateBlogResponse();
+
+      // set the blog response to be returned
+      addedBlog.setId(id);
+      addedBlog.setAuthor(blog.getAuthor());
+      addedBlog.setTitle(blog.getTitle());
+      addedBlog.setContent(blog.getContent());
+      blogResponse.setBlog(addedBlog);
+
+      console.log('Inserted Blog with ID', blogResponse);
+      callback(null, blogResponse);
+    }).catch((error) => {
+      console.error(error);
+    });
+}
+
 function main() {
   const server = new grpc.Server();
   server.addService(service.GreetServiceService, { greet, greetManyTimes });
@@ -91,6 +121,7 @@ function main() {
   });
   server.addService(blogService.BlogServiceService, {
     listBlog,
+    createBlog,
   });
 
 

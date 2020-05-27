@@ -89,11 +89,35 @@ function callListBlog() {
     console.error(error.details);
   });
 }
+
+function callCreateBlog() {
+  const client = new blogService.BlogServiceClient(
+    'localhost:50051',
+    grpc.credentials.createInsecure(),
+  );
+
+  const blog = new blogs.Blog();
+  blog.setAuthor('Lulu');
+  blog.setTitle('A blog by a dog...');
+  blog.setContent('Some content about sleeping all day');
+
+  const blogRequest = new blogs.CreateBlogRequest();
+  blogRequest.setBlog(blog);
+
+  client.createBlog(blogRequest, (error, response) => {
+    if (!error) {
+      console.log('Received create blog response', response.toString());
+    } else {
+      console.error(error.details);
+    }
+  });
+}
 function main() {
   // callGreeting();
   // callSum();
   // callGreetingManyTimes();
   callListBlog();
+  callCreateBlog();
 }
 
 main();

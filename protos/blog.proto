@@ -6,6 +6,7 @@ service BlogService {
   // All of our API's
 
   rpc ListBlog(ListBlogRequest) returns (stream ListBlogResponse) {};
+  rpc CreateBlog(CreateBlogRequest) returns (CreateBlogResponse) {};
 }
 
 // This is the blog content
@@ -21,3 +22,8 @@ message ListBlogRequest {}
 
 // Blog response
 message ListBlogResponse { Blog blog = 1; }
+
+// Creates a new blog post
+message CreateBlogRequest { Blog blog = 1; }
+
+message CreateBlogResponse { Blog blog = 1; }
