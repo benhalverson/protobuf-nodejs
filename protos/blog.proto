@@ -7,6 +7,7 @@ service BlogService {
 
   rpc ListBlog(ListBlogRequest) returns (stream ListBlogResponse) {};
   rpc CreateBlog(CreateBlogRequest) returns (CreateBlogResponse) {};
+  rpc ReadBlog(ReadBlogRequest) returns (ReadBlogResponse) {};
 }
 
 // This is the blog content
@@ -27,3 +28,8 @@ message ListBlogResponse { Blog blog = 1; }
 message CreateBlogRequest { Blog blog = 1; }
 
 message CreateBlogResponse { Blog blog = 1; }
+
+// Get a blog by ID
+message ReadBlogRequest { string blog_id = 1; }
+
+message ReadBlogResponse { Blog blog = 1; }

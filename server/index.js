@@ -106,10 +106,45 @@ function createBlog(call, callback) {
       addedBlog.setContent(blog.getContent());
       blogResponse.setBlog(addedBlog);
 
-      console.log('Inserted Blog with ID', blogResponse);
       callback(null, blogResponse);
     }).catch((error) => {
       console.error(error);
+    });
+}
+
+function readBlog(call, callback) {
+  console.log('get blog request by ID');
+
+  // get id
+  const blogId = call.request.getBlogId();
+
+  knex('blogs')
+    // eslint-disable-next-line radix
+    .where({ id: parseInt(blogId) })
+    .then((data) => {
+      console.log('searching for blog...');
+      if (data.length) {
+        const blog = new blogs.Blog();
+        console.log('Blog found and sending message');
+        // set the blog response to be returned
+
+        blog.setId(blogId);
+        blog.setAuthor(data[0].author);
+        blog.setTitle(data[0].title);
+        blog.setContent(data[0].content);
+
+        const blogResponse = new blogs.ReadBlogResponse();
+        blogResponse.setBlog(blog);
+        callback(null, blogResponse);
+      } else {
+        console.log('blog not found');
+        return callback({
+          code: grpc.status.NOT_FOUND,
+          message: 'blog not found',
+        });
+      }
+    }).catch((error) => {
+      console.error('Error', error.message);
     });
 }
 
@@ -122,6 +157,7 @@ function main() {
   server.addService(blogService.BlogServiceService, {
     listBlog,
     createBlog,
+    readBlog,
   });
 
 

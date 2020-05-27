@@ -112,12 +112,33 @@ function callCreateBlog() {
     }
   });
 }
+
+function callReadBlog() {
+  const client = new blogService.BlogServiceClient(
+    'localhost:50051',
+    grpc.credentials.createInsecure(),
+  );
+
+  const readBlogRequest = new blogs.ReadBlogRequest();
+  readBlogRequest.setBlogId('21');
+
+  client.readBlog(readBlogRequest, (error, response) => {
+    if (!error) {
+      console.log('found a blog: ', response.toString());
+    } else if (error.code === grpc.status.NOT_FOUND) {
+      console.log('not found');
+    } else {
+      // do something else
+    }
+  });
+}
 function main() {
   // callGreeting();
   // callSum();
   // callGreetingManyTimes();
   callListBlog();
   callCreateBlog();
+  callReadBlog();
 }
 
 main();
