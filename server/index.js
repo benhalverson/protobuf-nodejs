@@ -1,11 +1,18 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable no-console */
 const grpc = require('grpc');
+
+const environment = process.env.ENVIRONMENT || 'development';
+const config = require('./knexfile')[environment];
+
+const fs = require('fs');
+const knex = require('knex')(config);
 const greets = require('./protos/greet_pb');
 const service = require('./protos/greet_grpc_pb');
 const calc = require('./protos/calculator_pb');
 const calcService = require('./protos/calculator_grpc_pb');
-
+const blogs = require('./protos/blog_pb');
+const blogService = require('./protos/blog_grpc_pb');
 
 /**
  * Implements the greet RPC method
@@ -38,7 +45,7 @@ function sum(call, callback) {
  * Greet many times rpc
  */
 
-function greetManyTimes(call, callback) {
+function greetManyTimes(call) {
   const count = 0;
   const intervalID = setInterval(() => {
     const firstName = call.request.getGreet().getFirstName();
@@ -54,12 +61,38 @@ function greetManyTimes(call, callback) {
   }, 1000);
 }
 
+/**
+ * Blog CRUD
+ */
+function listBlog(call, callback) {
+  console.log('Received list blog request');
+  knex('blogs').then((data) => {
+    data.forEach((element) => {
+      const blog = new blogs.Blog();
+      blog.setId(element.id);
+      blog.setAuthor(element.author);
+      blog.setTitle(element.title);
+      blog.setContent(element.content);
+
+      const blogResponse = new blogs.ListBlogResponse();
+      blogResponse.setBlog(blog);
+      // write to the stream
+      call.write(blogResponse);
+    });
+    call.end();
+  });
+}
+
 function main() {
   const server = new grpc.Server();
   server.addService(service.GreetServiceService, { greet, greetManyTimes });
   server.addService(calcService.CalculatorServiceService, {
     sum,
   });
+  server.addService(blogService.BlogServiceService, {
+    listBlog,
+  });
+
 
   server.bind('localhost:50051', grpc.ServerCredentials.createInsecure());
   server.start();

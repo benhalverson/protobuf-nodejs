@@ -4,7 +4,8 @@ const greets = require('../server/protos/greet_pb');
 const services = require('../server/protos/greet_grpc_pb');
 const calc = require('../server/protos/calculator_pb');
 const calcService = require('../server/protos/calculator_grpc_pb');
-
+const blogs = require('../server/protos/blog_pb');
+const blogService = require('../server/protos/blog_grpc_pb');
 
 function callGreeting() {
   console.log('hello from the client');
@@ -72,10 +73,27 @@ function callGreetingManyTimes() {
 
   client.greetManyTimes(request, () => { });
 }
+function callListBlog() {
+  const client = new blogService.BlogServiceClient(
+    'localhost:50051',
+    grpc.credentials.createInsecure(),
+  );
+  const emptyBlogRequest = new blogs.ListBlogRequest();
+  const call = client.listBlog(emptyBlogRequest, () => { });
+
+  call.on('data', (response) => {
+    console.log('Client streaming response: ', response.getBlog().toString());
+  });
+
+  call.on('error', (error) => {
+    console.error(error.details);
+  });
+}
 function main() {
-  callGreeting();
-  callSum();
-  callGreetingManyTimes();
+  // callGreeting();
+  // callSum();
+  // callGreetingManyTimes();
+  callListBlog();
 }
 
 main();
