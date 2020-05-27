@@ -34,12 +34,33 @@ function sum(call, callback) {
   callback(null, sumResponse);
 }
 
+/**
+ * Greet many times rpc
+ */
+
+function greetManyTimes(call, callback) {
+  const count = 0;
+  const intervalID = setInterval(() => {
+    const firstName = call.request.getGreet().getFirstName();
+    const greetManyTimesResponse = new greets.GreetManyTimesResponse();
+    greetManyTimesResponse.setResult(firstName);
+
+    // setup streaming
+    call.write(greetManyTimesResponse);
+    if (++count > 9) {
+      clearInterval(intervalID);
+    }
+    call.end(); // we have sent all the messages.
+  }, 1000);
+}
+
 function main() {
   const server = new grpc.Server();
-  server.addService(service.GreetServiceService, { greet });
+  server.addService(service.GreetServiceService, { greet, greetManyTimes });
   server.addService(calcService.CalculatorServiceService, {
     sum,
   });
+
   server.bind('localhost:50051', grpc.ServerCredentials.createInsecure());
   server.start();
   console.log('server is running on 50051');

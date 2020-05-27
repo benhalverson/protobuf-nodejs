@@ -56,9 +56,26 @@ function callSum() {
     }
   });
 }
+
+function callGreetingManyTimes() {
+  const client = new services.GreetServiceClient(
+    'localhost:50051',
+    grpc.credentials.createInsecure(),
+  );
+
+  // create request
+  const request = new greets.GreetManyTimesRequest();
+  const greeting = new greets.Greeting();
+
+  greeting.setFirstName('Benny');
+  greeting.setLastName('Halverson');
+
+  client.greetManyTimes(request, () => { });
+}
 function main() {
   callGreeting();
   callSum();
+  callGreetingManyTimes();
 }
 
 main();
