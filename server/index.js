@@ -1,11 +1,10 @@
-/* eslint-disable import/no-unresolved */
 /* eslint-disable no-console */
+/* eslint-disable no-plusplus */
+/* eslint-disable import/order */
 const grpc = require('grpc');
 
 const environment = process.env.ENVIRONMENT || 'development';
 const config = require('./knexfile')[environment];
-
-const fs = require('fs');
 const knex = require('knex')(config);
 const greets = require('./protos/greet_pb');
 const service = require('./protos/greet_grpc_pb');
@@ -46,7 +45,7 @@ function sum(call, callback) {
  */
 
 function greetManyTimes(call) {
-  const count = 0;
+  let count = 0;
   const intervalID = setInterval(() => {
     const firstName = call.request.getGreet().getFirstName();
     const greetManyTimesResponse = new greets.GreetManyTimesResponse();
@@ -54,7 +53,7 @@ function greetManyTimes(call) {
 
     // setup streaming
     call.write(greetManyTimesResponse);
-    if (++count > 9) {
+    if (count++ > 9) {
       clearInterval(intervalID);
     }
     call.end(); // we have sent all the messages.
@@ -64,7 +63,7 @@ function greetManyTimes(call) {
 /**
  * Blog CRUD
  */
-function listBlog(call, callback) {
+const listBlog = (call, callback) => {
   console.log('Received list blog request');
   knex('blogs').then((data) => {
     data.forEach((element) => {
@@ -81,9 +80,9 @@ function listBlog(call, callback) {
     });
     call.end();
   });
-}
+};
 
-function createBlog(call, callback) {
+const createBlog = (call, callback) => {
   console.log('Recieved blog request');
 
   const blog = call.request.getBlog();
@@ -110,9 +109,9 @@ function createBlog(call, callback) {
     }).catch((error) => {
       console.error(error);
     });
-}
+};
 
-function readBlog(call, callback) {
+const readBlog = (call, callback) => {
   console.log('get blog request by ID');
 
   // get id
@@ -146,9 +145,9 @@ function readBlog(call, callback) {
     }).catch((error) => {
       console.error('Error', error.message);
     });
-}
+};
 
-function main() {
+const main = () => {
   const server = new grpc.Server();
   server.addService(service.GreetServiceService, { greet, greetManyTimes });
   server.addService(calcService.CalculatorServiceService, {
@@ -160,10 +159,9 @@ function main() {
     readBlog,
   });
 
-
   server.bind('localhost:50051', grpc.ServerCredentials.createInsecure());
   server.start();
   console.log('server is running on 50051');
-}
+};
 
 main();
