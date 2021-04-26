@@ -16,7 +16,7 @@
     "google-protobuf": "3.14.0",
     "grpc": "1.24.4",
     "knex": "0.21.15",
-    "pg": "8.5.1"
+    "pg": "8.6.0"
   },
   "devDependencies": {
     "eslint": "7.17.0",
