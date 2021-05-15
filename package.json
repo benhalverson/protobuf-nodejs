@@ -13,7 +13,7 @@
   "author": "Ben Halverson <benhalverson33@gmail.com> (http://benhalverson.me/)",
   "license": "MIT",
   "dependencies": {
-    "google-protobuf": "3.14.0",
+    "google-protobuf": "3.17.0",
     "grpc": "1.24.4",
     "knex": "0.21.15",
     "pg": "8.5.1"
